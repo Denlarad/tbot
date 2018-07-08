@@ -37,6 +37,17 @@ public class DanilDoeBot extends TelegramLongPollingBot {
                 response.setChatId(update.getMessage().getChatId())
                         .setText(joke);
                 break;
+            case "Погода в Караганде сейчас":
+                String weather;
+                try {
+                    weather = Weather.getWeather();
+                } catch (IOException e) {
+                    weather = "С погодой случилась аномалия...";
+                }
+                response.setChatId(update.getMessage().getChatId())
+                        .setText(weather);
+                break;
+
         }
 
         try {
@@ -67,7 +78,7 @@ public class DanilDoeBot extends TelegramLongPollingBot {
         keyboardRows.add(keyboardRow);
 
         keyboardRow = new KeyboardRow();
-        keyboardRow.add("Просто кнопка!");
+        keyboardRow.add("Погода в Караганде сейчас");
         keyboardRows.add(keyboardRow);
 
         keyboard.setKeyboard(keyboardRows);
