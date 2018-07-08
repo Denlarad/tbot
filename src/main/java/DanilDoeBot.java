@@ -1,24 +1,46 @@
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DanilDoeBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println(update.getMessage().getChat().getFirstName());
-        System.out.println(update.getMessage().getChat().getLastName());
-        System.out.println(update.getMessage().getChat().getUserName());
+
         String text = update.getMessage().getText();
-        System.out.println(text);
 
-        SendMessage sendMessage = new SendMessage();
+        SendMessage response = new SendMessage();
 
-        sendMessage.setChatId(update.getMessage().getChatId())
-                .setText("Ты написал: " + text);
+        response.setReplyMarkup(getKeyboard());
+
+
+        switch (text) {
+            case "/start":
+                response.setChatId(update.getMessage().getChatId())
+                        .setText("Дарова");
+                break;
+            case "\uD83D\uDE02 Цитатку мне":
+                String joke;
+
+                try {
+                    joke = BashUtil.getJoke();
+                } catch (IOException e) {
+                    joke = "Шутка не удалась!";
+                }
+
+                response.setChatId(update.getMessage().getChatId())
+                        .setText(joke);
+                break;
+        }
 
         try {
-            execute(sendMessage);
+            execute(response);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -32,5 +54,23 @@ public class DanilDoeBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return "540058411:AAFGO6MiD_1kNByu3HW6z-k-OFGFvEZ7fHU";
+    }
+
+    private ReplyKeyboardMarkup getKeyboard() {
+        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+        keyboard.setResizeKeyboard(true);
+
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add("\uD83D\uDE02 Цитатку мне");
+        keyboardRows.add(keyboardRow);
+
+        keyboardRow = new KeyboardRow();
+        keyboardRow.add("Просто кнопка!");
+        keyboardRows.add(keyboardRow);
+
+        keyboard.setKeyboard(keyboardRows);
+        return keyboard;
     }
 }
